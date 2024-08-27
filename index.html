@@ -6,7 +6,7 @@
 	<title></title> 
 	<style type="text/css">
 		canvas{
-			background-color: gray;
+			background-color: #D3DDF3;
 		}
 	</style>
 </head>
@@ -18,6 +18,7 @@
 		const my_canvas = document.getElementById('my_canvas')
 		const ctx = my_canvas.getContext('2d');
 		var figura = 1;
+		var status = 0;
 
 		my_canvas.addEventListener("click",function(e){ 
 
@@ -44,6 +45,26 @@
 			figura = (figura==1)?2:1;
 		})
 
+		my_canvas.addEventListener("mousemove",function(e){
+			
+			if (status==1) { 
+				ctx.beginPath();
+				ctx.arc(e.offsetX,e.offsetY,3,0,2 * Math.PI)
+				ctx.stroke() 
+			}
+
+		})
+
+		my_canvas.addEventListener("mousedown",function(e){
+
+			status = 1;
+		})
+
+		my_canvas.addEventListener("mouseup",function(e){
+
+			status = 0;
+		})
+
 		function getRandomColor() {
 		  var trans = '0.5'; // 50% transparency
 		  var color = 'rgba(';
@@ -58,20 +79,9 @@
 
 		
 
-		my_canvas.addEventListener("mousemove",function(e){
+		
 
-			 // console.log(e)
-		})
-
-		my_canvas.addEventListener("mousedown",function(e){
-
-			//console.log(e)
-		})
-
-		my_canvas.addEventListener("mouseup",function(e){
-
-			// console.log(e)
-		})
+		
 
 
 		/*
