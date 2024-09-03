@@ -21,53 +21,87 @@
 		var figura = 1;
 		var status = 0;
 		var s_x= 280, s_y = 280;
+		var direction = "";
+		var speed = 10;
 
 
 		document.addEventListener("keydown",function(e){
 
-			// ctx.fillStyle = "#D3DDF3";
-			// ctx.fillRect(0,0,600,600) 
+			switch(e.keyCode)
+			{
+				case 87:
+					direction = "up";
+				break;
+				case 83:
+					direction = "down";
+				break;	
+				case 65:
+					direction = "left";
+				break;
+				case 68:
+					direction = "right";
+				break;
+				case 32:
+					speed+=2.5;
+				break;
+			}  
+			
+		})
+
+		function update()
+		{
+			switch(direction)
+			{
+				case "up": 
+					s_y -=speed;
+					if (s_y<=-40) {
+						s_y = 630;
+					}
+				break;
+				case "down": 
+					s_y +=speed;
+					if (s_y+50>630) {
+						s_y = -40
+					}
+				break;	
+				case "left": 
+					s_x -=speed;
+					if (s_x<=-40) {
+						s_x = 630;
+					}
+				break;
+				case "right":  
+					s_x +=speed;	
+					if (s_x+50>620) {
+						s_x = -40;
+					}
+				break;
+			} 
+
+			
+		}
+
+		function pintar()
+		{
+			ctx.fillStyle = "#D3DDF3";
+			ctx.fillRect(0,0,600,600) 
 
 			//console.log(e)
 			ctx.fillStyle = getRandomColor();
 
-			switch(e.keyCode)
-			{
-				case 87:
-					s_y -=10;
-				break;
-				case 83:
-					s_y +=10;
-				break;	
-				case 65:
-					s_x -=10;
-				break;
-				case 68:
-					s_x +=10;	
-				break;
-			} 
-			 
-			  
-			let w = Math.random() * 600;
-			let h = Math.random() * 600;
+			ctx.fillRect(s_x,s_y,50,50)
+			ctx.strokeRect(s_x,s_y,50,50)
 
-			ctx.fillRect(w,h,50,50)
-			ctx.strokeRect(w,h,50,50)
+			ctx.fillStyle ="black"
+			ctx.font ="20px AcademyEngravedLetPlain"; 
+			ctx.fillText("Speed: "+speed,500,30);
 
-			ctx.font ="40px AcademyEngravedLetPlain";
-			ctx.strokeText(e.key,w+10,h+25)
+			update();
+			requestAnimationFrame(pintar);
+		}
 
-		})
+		requestAnimationFrame(pintar);
 
-		document.addEventListener("keypress",(e)=>{
-			
-			//console.log(e)
-		})
-
-		document.addEventListener("keyup",function(e){
-			
-			//console.log(e)
-		})
 
 		function getRandomColor() {
 		  var trans = '0.5'; // 50% transparency
@@ -79,7 +113,24 @@
 		  return color;
 		}
 
-		/*my_canvas.addEventListener("click",function(e){ 
+
+
+
+		/*
+
+		document.addEventListener("keypress",(e)=>{
+			
+			//console.log(e)
+		})
+
+		document.addEventListener("keyup",function(e){
+			
+			//console.log(e)
+		})
+
+		
+
+		my_canvas.addEventListener("click",function(e){ 
 
 			if (figura == 1) {
 				ctx.beginPath();
