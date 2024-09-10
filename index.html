@@ -22,6 +22,15 @@
 		var status = 0; 
 		var direction = "";
 		var speed = 10;
+		var walls = [];
+		var score = 0;
+		var pause = false;
+		
+		var imagen = new Image();
+		imagen.src = "cocodrilo.png"; 
+
+		const audio = new Audio("donkey-kong-coin.mp3");
+		
 
 		class Rectangulo {
 		  
@@ -52,7 +61,8 @@
 		
 		var target = new Rectangulo(100,100,20,20,getRandomColor(),10);
 
-		var wall = new Rectangulo(100,480,400,20,getRandomColor(),10);
+		walls.push(new Rectangulo(100,480,400,20,getRandomColor(),10))
+		walls.push(new Rectangulo(100,80,400,20,getRandomColor(),10))
 
 
 		document.addEventListener("keydown",function(e){
@@ -71,8 +81,8 @@
 				case 68:
 					direction = "right";
 				break;
-				case 32:
-					speed+=2.5;
+				case 32: 
+					pause = !pause; 
 				break;
 			}  
 			
@@ -80,33 +90,38 @@
 
 		function update()
 		{
-			switch(direction)
-			{
-				case "up": 
-					player.y -=speed;
-					if (player.y<=-40) {
-						player.y = 630;
-					}
-				break;
-				case "down": 
-					player.y +=speed;
-					if (player.y+50>630) {
-						player.y = -40
-					}
-				break;	
-				case "left": 
-					player.x -=speed;
-					if (player.x<=-40) {
-						player.x = 630;
-					}
-				break;
-				case "right":  
-					player.x +=speed;	
-					if (player.x+50>620) {
-						player.x = -40;
-					}
-				break;
-			} 
+
+			if (!pause) {
+
+				switch(direction)
+				{
+					case "up": 
+						player.y -=speed;
+						if (player.y<=-40) {
+							player.y = 630;
+						}
+					break;
+					case "down": 
+						player.y +=speed;
+						if (player.y+50>630) {
+							player.y = -40
+						}
+					break;	
+					case "left": 
+						player.x -=speed;
+						if (player.x<=-40) {
+							player.x = 630;
+						}
+					break;
+					case "right":  
+						player.x +=speed;	
+						if (player.x+50>620) {
+							player.x = -40;
+						}
+					break;
+				} 
+
+			}
 
 			if (player.tocando(target)) {
 
@@ -114,25 +129,35 @@
 				target.x = Math.floor(Math.random() * 580) ;
 				target.y = Math.floor(Math.random() * 580) ;
 
+				score += 10;
+				speed += 1;
+
+				audio.pause();
+				audio.play();
+
 			}
 
-			if (player.tocando(wall)) {
-				switch(direction)
-				{
-					case "up": 
-						player.y +=speed; 
-					break;
-					case "down": 
-						player.y -=speed; 
-					break;	
-					case "left": 
-						player.x +=speed; 
-					break;
-					case "right":  
-						player.x -=speed;	 
-					break;
-				} 
-			}
+			walls.forEach(function (wall, i, array) {
+			   
+				if (player.tocando(wall)) {
+					switch(direction)
+					{
+						case "up": 
+							player.y +=speed; 
+						break;
+						case "down": 
+							player.y -=speed; 
+						break;	
+						case "left": 
+							player.x +=speed; 
+						break;
+						case "right":  
+							player.x -=speed;	 
+						break;
+					} 
+				}
+
+			});
 			
 		}
 
@@ -142,9 +167,8 @@
 			ctx.fillRect(0,0,600,600) 
 
 			//player
-			ctx.fillStyle =player.c;
-			ctx.fillRect(player.x,player.y,50,50)
-			ctx.strokeRect(player.x,player.y,50,50)
+			ctx.fillStyle =player.c;  
+			ctx.drawImage(imagen,player.x,player.y,50,50)
 
 			//target
 			ctx.fillStyle =target.c;
@@ -152,13 +176,29 @@
 			ctx.strokeRect(target.x,target.y,target.w,target.h)
 
 			//wall
-			ctx.fillStyle =wall.c;
-			ctx.fillRect(wall.x,wall.y,wall.w,wall.h)
-			ctx.strokeRect(wall.x,wall.y,wall.w,wall.h)
+
+			walls.forEach(function (wall, indice, array) {
+			  
+			  	ctx.fillStyle =wall.c;
+				ctx.fillRect(wall.x,wall.y,wall.w,wall.h)
+				ctx.strokeRect(wall.x,wall.y,wall.w,wall.h)
+
+			}); 
 
 			ctx.fillStyle ="black"
 			ctx.font ="20px AcademyEngravedLetPlain"; 
-			ctx.fillText("Speed: "+speed,500,30);
+			ctx.fillText("Score: "+score,500,30);
+
+			if (pause) {
+
+				ctx.fillStyle = "rgba(196,193,192,0.5)";
+				ctx.fillRect(0,0,600,600) 
+
+				ctx.fillStyle ="black"
+				ctx.font ="40px AcademyEngravedLetPlain"; 
+				ctx.fillText("P A U S E ",250,250);
+
+			}
 
 			update();
 			requestAnimationFrame(pintar);
