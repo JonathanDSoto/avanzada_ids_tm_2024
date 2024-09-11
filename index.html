@@ -3,359 +3,96 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title> 
+	<title>
+		Vue js
+	</title>
 	<style type="text/css">
-		canvas{
-			background-color: #D3DDF3;
+		input{
+			background-color: gray;
 		}
-	/*		*/
 	</style>
 </head>
 <body>
 	
-	<canvas id="my_canvas" width="600" height="600"></canvas>
+	<div id="main">
 
-	<script type="text/javascript">
-		const my_canvas = document.getElementById('my_canvas')
-		const ctx = my_canvas.getContext('2d');
-		var figura = 1;
-		var status = 0; 
-		var direction = "";
-		var speed = 10;
-		var walls = [];
-		var score = 0;
-		var pause = false;
+		<h2>
+			Bienvenido a la aplicación: {{ title }}
+		</h2>
 		
-		var imagen = new Image();
-		imagen.src = "cocodrilo.png"; 
-
-		const audio = new Audio("donkey-kong-coin.mp3");
-		
-
-		class Rectangulo {
-		  
-		 	constructor(x,y,w,h,c,s) {
-		    	this.x = x;
-		    	this.y = y;
-		    	this.w = w;
-		    	this.h = h;
-		    	this.c = c;
-		    	this.s = s;
-			}
-
-			tocando(otro) {
-			    
-				if( this.x < otro.x + otro.w  &&  
-					this.x + this.w > otro.x    &&    
-					this.y < otro.y + otro.h  &&    
-					this.y + this.h > otro.y   )
-				{   
-					return true;
-				}
-
-			    return false;
-			}
-		}
-
-		var player = new Rectangulo(280,280,50,50,getRandomColor(),10);
-		
-		var target = new Rectangulo(100,100,20,20,getRandomColor(),10);
-
-		walls.push(new Rectangulo(100,480,400,20,getRandomColor(),10))
-		walls.push(new Rectangulo(100,80,400,20,getRandomColor(),10))
-
-
-		document.addEventListener("keydown",function(e){
-
-			switch(e.keyCode)
-			{
-				case 87:
-					direction = "up";
-				break;
-				case 83:
-					direction = "down";
-				break;	
-				case 65:
-					direction = "left";
-				break;
-				case 68:
-					direction = "right";
-				break;
-				case 32: 
-					pause = !pause; 
-				break;
-			}  
-			
-		})
-
-		function update()
-		{
-
-			if (!pause) {
-
-				switch(direction)
-				{
-					case "up": 
-						player.y -=speed;
-						if (player.y<=-40) {
-							player.y = 630;
-						}
-					break;
-					case "down": 
-						player.y +=speed;
-						if (player.y+50>630) {
-							player.y = -40
-						}
-					break;	
-					case "left": 
-						player.x -=speed;
-						if (player.x<=-40) {
-							player.x = 630;
-						}
-					break;
-					case "right":  
-						player.x +=speed;	
-						if (player.x+50>620) {
-							player.x = -40;
-						}
-					break;
-				} 
-
-			}
-
-			if (player.tocando(target)) {
-
-				target.c = getRandomColor();
-				target.x = Math.floor(Math.random() * 580) ;
-				target.y = Math.floor(Math.random() * 580) ;
-
-				score += 10;
-				speed += 1;
-
-				audio.pause();
-				audio.play();
-
-			}
-
-			walls.forEach(function (wall, i, array) {
-			   
-				if (player.tocando(wall)) {
-					switch(direction)
-					{
-						case "up": 
-							player.y +=speed; 
-						break;
-						case "down": 
-							player.y -=speed; 
-						break;	
-						case "left": 
-							player.x +=speed; 
-						break;
-						case "right":  
-							player.x -=speed;	 
-						break;
-					} 
-				}
-
-			});
-			
-		}
-
-		function pintar()
-		{
-			ctx.fillStyle = "#D3DDF3";
-			ctx.fillRect(0,0,600,600) 
-
-			//player
-			ctx.fillStyle =player.c;  
-			ctx.drawImage(imagen,player.x,player.y,50,50)
-
-			//target
-			ctx.fillStyle =target.c;
-			ctx.fillRect(target.x,target.y,target.w,target.h)
-			ctx.strokeRect(target.x,target.y,target.w,target.h)
-
-			//wall
-
-			walls.forEach(function (wall, indice, array) {
-			  
-			  	ctx.fillStyle =wall.c;
-				ctx.fillRect(wall.x,wall.y,wall.w,wall.h)
-				ctx.strokeRect(wall.x,wall.y,wall.w,wall.h)
-
-			}); 
-
-			ctx.fillStyle ="black"
-			ctx.font ="20px AcademyEngravedLetPlain"; 
-			ctx.fillText("Score: "+score,500,30);
-
-			if (pause) {
-
-				ctx.fillStyle = "rgba(196,193,192,0.5)";
-				ctx.fillRect(0,0,600,600) 
-
-				ctx.fillStyle ="black"
-				ctx.font ="40px AcademyEngravedLetPlain"; 
-				ctx.fillText("P A U S E ",250,250);
-
-			}
-
-			update();
-			requestAnimationFrame(pintar);
-		}
-
-		requestAnimationFrame(pintar);
-
-
-		function getRandomColor() {
-		  var trans = '0.5'; // 50% transparency
-		  var color = 'rgba(';
-		  for (var i = 0; i < 3; i++) {
-		    color += Math.floor(Math.random() * 255) + ',';
-		  }
-		  color += trans + ')'; // add the transparency
-		  return color;
-		}
-
-
-
-
-		/*
-
-		document.addEventListener("keypress",(e)=>{
-			
-			//console.log(e)
-		})
-
-		document.addEventListener("keyup",function(e){
-			
-			//console.log(e)
-		})
-
-		
-
-		my_canvas.addEventListener("click",function(e){ 
-
-			if (figura == 1) {
-				ctx.beginPath();
-				ctx.arc(e.x,e.y,60,0,2 * Math.PI)
-				ctx.stroke()
-				ctx.fill()
-			}else{
-
-				ctx.fillRect(e.x - 50,e.y-50,100,100)
-				ctx.strokeRect(e.x - 50,e.y-50,100,100)
-			}
-
-		})
-
-		my_canvas.addEventListener("mouseover",function(e){
-
-			ctx.fillStyle = getRandomColor();
-		})
-
-		my_canvas.addEventListener("mouseout",function(e){
-
-			figura = (figura==1)?2:1;
-		})
-
-		my_canvas.addEventListener("mousemove",function(e){
-			
-			if (status==1) { 
-				ctx.beginPath();
-				ctx.arc(e.offsetX,e.offsetY,3,0,2 * Math.PI)
-				ctx.stroke() 
-			}
-
-		})
-
-		my_canvas.addEventListener("mousedown",function(e){
-
-			status = 1;
-		})
-
-		my_canvas.addEventListener("mouseup",function(e){
-
-			status = 0;
-		})
- 
-		
-		*/
-		
-
-		
-
-
-		/*
-		ctx.strokeRect(20,20,100,100)
-
-		ctx.fillStyle="red"
-		ctx.fillRect(100,100,100,100)
-
-		ctx.fillStyle="#E377E7"
-		ctx.fillRect(180,180,100,100)
-
-		ctx.fillStyle="rgba(173, 231, 119,0.5)"
-		ctx.fillRect(260,260,100,100)
-
-		ctx.lineWidth = 4;
-		ctx.strokeStyle="red"
-		ctx.strokeRect(340,340,100,100);
-
-		ctx.beginPath()
-		ctx.moveTo(400,100);
-		ctx.lineTo(400,200);
-		ctx.closePath();
-		ctx.stroke();
-
-		ctx.beginPath();
-		ctx.moveTo(150,300);
-		ctx.lineTo(20,450);
-		ctx.lineTo(260,450);
-		ctx.closePath();
-		ctx.stroke()
-		ctx.fill()
-
-		ctx.beginPath();
-		ctx.arc(300,100,70,0,2 * Math.PI)
-		ctx.stroke()
-		ctx.fill()
-
-		ctx.strokeStyle="black"
-		ctx.beginPath();
-		ctx.arc(300,120,40,0.2,1 * Math.PI)
-		ctx.stroke() 
-
-		ctx.font ="40px AcademyEngravedLetPlain";
-		ctx.strokeText("Hola mundo",40,40)
-		ctx.fillStyle ="yellow";
-		ctx.fillText("Hola mundo",41,41);
-
-		var grd = ctx.createLinearGradient(0,0,200,500)
-		grd.addColorStop(0, "#77E785");
-		grd.addColorStop(0.5, "cyan");
-		grd.addColorStop(1, "#7799E7");
-
-		ctx.fillStyle = grd;
-		ctx.fillRect(10,200,250,50);
-
-		var grd2 = ctx.createRadialGradient(400,250,80,350,300,80)
-
-		grd2.addColorStop(0, "pink");
-		grd2.addColorStop(0.9, "white");
-		grd2.addColorStop(1, "green");
-
-		ctx.fillStyle = grd2;
-		ctx.fillRect(300,150,300,400);
-
-		var imagen = new Image();
-		imagen.src = "cocodrilo.png";
-
-		ctx.drawImage(imagen,380,180,100,100)*/
-
+		<form>
+			<fieldset>
+				<label>
+					Nombre: 
+				</label>
+				<input v-model="name"  placeholder="write Here" name="">
+			</fieldset>
+		</form>
+
+		<h4>
+			Hola: {{ name }}
+		</h4>
+
+		<button @click="contador++" >
+			Click me: {{ contador }}
+		</button>
+
+		<hr>
+
+		<input type="number" v-model="num1" name="">
+		<br>
+		<input type="number" v-model="num2" name="">
+		<br>
+		<button v-on:click="resultado=num1+num2">
+			Sumar
+		</button>
+		<br>
+		<label>
+			Resultado: {{ resultado }}
+		</label>
+
+	</div>
+
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	<script>
+	  const { createApp, ref } = Vue
+
+	  createApp({
+	    
+	    setup() {
+
+	      const title = ref('Hello vue!')
+	      let name = ref('')
+	      let contador = ref(0)
+	      let resultado = ref(0)
+	      let num1 = ref(0)
+	      let num2 = ref(0)
+	      
+	      return {
+	        title,
+	        name,
+	        contador,
+	        resultado,
+	        num1,
+	        num2
+	      }
+	    }
+
+	  }).mount('#main')
 	</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
