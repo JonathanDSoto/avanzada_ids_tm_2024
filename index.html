@@ -51,6 +51,12 @@
 			Resultado: {{ resultado }}
 		</label>
 
+		<ol>
+			<li v-for="">
+				
+			</li>
+		</ol>
+
 	</div>
 
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -67,6 +73,17 @@
 	      let resultado = ref(0)
 	      let num1 = ref(0)
 	      let num2 = ref(0)
+
+	      let users = ref([ 
+	      		{
+	      			"name":"Alexis",
+	      			"rol":"Backend"
+	      		},
+	      		{
+	      			"name":"Ricardo",
+	      			"rol":"Frontend"
+	      		}
+	      	])
 	      
 	      return {
 	        title,
@@ -76,6 +93,18 @@
 	        num1,
 	        num2
 	      }
+	    },
+
+	    methods: {
+
+	    	addUser()
+	    	{
+	    		let tmp = { 
+	    			"name":this.name,
+	    			"rol":this.rol
+	    		} 
+	    	}
+
 	    }
 
 	  }).mount('#main')
