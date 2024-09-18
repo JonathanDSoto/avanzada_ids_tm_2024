@@ -17,45 +17,37 @@
 	<div id="main">
 
 		<h2>
-			Bienvenido a la aplicación: {{ title }}
+			Acceso
 		</h2>
 		
-		<form>
+		<form @submit.prevent="onSubmit" v-if="!access">
 			<fieldset>
 				<label>
-					Nombre: 
+					Correo: 
 				</label>
-				<input v-model="name"  placeholder="write Here" name="">
+				<input v-model="email" type="email"  placeholder="write Here" required name="">
 			</fieldset>
+
+			<fieldset>
+				<label>
+					Password: 
+				</label>
+				<input v-model="password"  placeholder="write Here" type="password" required name="">
+			</fieldset>
+
+			<button type="submit">
+				Acceder
+			</button>
+		
 		</form>
 
-		<h4>
-			Hola: {{ name }}
-		</h4>
+		<div v-if="access">
+			
+			<h1>
+				Bienvenido al sistema
+			</h1>
 
-		<button @click="contador++" >
-			Click me: {{ contador }}
-		</button>
-
-		<hr>
-
-		<input type="number" v-model="num1" name="">
-		<br>
-		<input type="number" v-model="num2" name="">
-		<br>
-		<button v-on:click="resultado=num1+num2">
-			Sumar
-		</button>
-		<br>
-		<label>
-			Resultado: {{ resultado }}
-		</label>
-
-		<ol>
-			<li v-for="">
-				
-			</li>
-		</ol>
+		</div>
 
 	</div>
 
@@ -67,44 +59,53 @@
 	    
 	    setup() {
 
-	      const title = ref('Hello vue!')
-	      let name = ref('')
-	      let contador = ref(0)
-	      let resultado = ref(0)
-	      let num1 = ref(0)
-	      let num2 = ref(0)
-
-	      let users = ref([ 
-	      		{
-	      			"name":"Alexis",
-	      			"rol":"Backend"
-	      		},
-	      		{
-	      			"name":"Ricardo",
-	      			"rol":"Frontend"
-	      		}
-	      	])
 	      
-	      return {
-	        title,
-	        name,
-	        contador,
-	        resultado,
-	        num1,
-	        num2
+	      let email = ref('') 
+	      let password = ref('') 
+	      let access = ref(false)
+	      
+	      return { 
+	        email,
+	        password,
+	        access
 	      }
 	    },
 
-	    methods: {
-
-	    	addUser()
+	    methods: { 
+	    	
+	    	onSubmit()
 	    	{
-	    		let tmp = { 
-	    			"name":this.name,
-	    			"rol":this.rol
-	    		} 
-	    	}
+	    		console.log(this.email) 
+	    		console.log(this.password)  
 
+	    		fetch('users.json',) 
+	    		.then(res=>res.json())
+	    		.then((response) => { 
+
+				    response.forEach((e) => {
+
+				    	if (e.email==this.email) {
+				    		if(e.password == this.password){
+
+				    			console.log("Login")
+				    			this.access = true
+				    		}
+				    	}
+
+				    });
+
+				    if (!this.access) {
+				    	alert("Verifique su información")
+				    }
+
+
+				 })
+	    		.catch((error) => {
+				    
+	    			alert("Ha ocurrido un error")
+
+				});
+	    	}
 	    }
 
 	  }).mount('#main')
