@@ -10,6 +10,27 @@
 		input{
 			background-color: gray;
 		}
+		table.customTable {
+		  width: 100%;
+		  background-color: #FFFFFF;
+		  border-collapse: collapse;
+		  border-width: 2px;
+		  border-color: #7EA8F8;
+		  border-style: solid;
+		  color: #000000;
+		}
+
+		table.customTable td, table.customTable th {
+		  border-width: 2px;
+		  border-color: #7EA8F8;
+		  border-style: solid;
+		  padding: 5px;
+		}
+
+		table.customTable thead {
+		  background-color: #7EA8F8;
+		}
+
 	</style>
 </head>
 <body>
@@ -47,36 +68,132 @@
 				Bienvenido al sistema
 			</h1>
 
+			<button v-if="!add_new_user" @click="add_new_user=true">
+				Agregar
+			</button>
+
+			<table class="customTable" v-if="!add_new_user">
+				<thead>
+					<th> 
+						name
+					</th>
+					<th> 
+						username
+					</th>
+					<th> 
+						email
+					</th>
+					<th> 
+						phone
+					</th> 
+				</thead>
+				<tbody>
+					<tr v-for="user in users">
+						<td>
+							{{ user.name }}
+						</td>
+						<td>
+							{{ user.username }}
+						</td>
+						<td>
+							{{ user.email }}
+						</td>
+						<td>
+							{{ user.phone }}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<form @submit.prevent="addNewUser" v-if="add_new_user">
+				<fieldset>
+					<label>
+						Name: 
+					</label>
+					<input v-model="user_name" type="text"  placeholder="write Here" required name="">
+				</fieldset>
+				<fieldset>
+					<label>
+						Username: 
+					</label>
+					<input v-model="user_username" type="text"  placeholder="write Here" required name="">
+				</fieldset>
+				<fieldset>
+					<label>
+						Email: 
+					</label>
+					<input v-model="user_email" type="text"  placeholder="write Here" required name="">
+				</fieldset>
+				<fieldset>
+					<label>
+						Phone: 
+					</label>
+					<input v-model="user_phone" type="text"  placeholder="write Here" required name="">
+				</fieldset>
+
+				<button>
+					Save data
+				</button>
+
+				<button @click="add_new_user=false">
+					Cancel
+				</button>
+			</form>
+
 		</div>
 
 	</div>
 
 	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 	<script>
-	  const { createApp, ref } = Vue
+
+		//var session = JSON.parse();
+		var session = localStorage.getItem("user_log")  
+		if (session) { 
+			console.log(JSON.parse(session)) 
+		}else{
+			localStorage.setItem("user_log", null);
+		}
+		
+
+	  const { createApp, ref } = Vue 
 
 	  createApp({
 	    
 	    setup() {
 
 	      
-	      let email = ref('') 
-	      let password = ref('') 
+	      let email = ref('jsoto@uabcs.mx') 
+	      let password = ref('123123123') 
 	      let access = ref(false)
-	      
+	      let users = ref([])
+	      let add_new_user = ref(false)
+
+	      let user_name = ref('')
+			let user_username = ref('')
+			let user_email = ref('')
+			let user_phone = ref('')
+
+	      if (session) {
+	      	access = ref(true)
+	      } 
+
 	      return { 
 	        email,
 	        password,
-	        access
+	        access,
+	        users,
+	        add_new_user,
+	        user_name,
+			user_username,
+			user_email,
+			user_phone
 	      }
-	    },
-
+	    }, 
 	    methods: { 
 	    	
 	    	onSubmit()
-	    	{
-	    		console.log(this.email) 
-	    		console.log(this.password)  
+	    	{  
 
 	    		fetch('users.json',) 
 	    		.then(res=>res.json())
@@ -85,10 +202,11 @@
 				    response.forEach((e) => {
 
 				    	if (e.email==this.email) {
-				    		if(e.password == this.password){
-
-				    			console.log("Login")
+				    		if(e.password == this.password){ 
+				    			
 				    			this.access = true
+
+				    			localStorage.setItem("user_log", JSON.stringify(e));
 				    		}
 				    	}
 
@@ -105,8 +223,44 @@
 	    			alert("Ha ocurrido un error")
 
 				});
-	    	}
-	    }
+	    	},
+	    	
+	    	addNewUser(){
+
+	    		let tmp = {
+	    			"name":this.user_name,
+	    			"username":this.user_username,
+	    			"email":this.user_email,
+	    			"phone":this.user_phone
+	    		}
+	    		
+				this.users.push(tmp)
+				this.user_name = ""
+				this.user_username = ""
+				this.user_email = ""
+				this.user_phone = ""
+
+				this.add_new_user = false;
+				
+				
+	    	},
+
+	    	initialize() {
+		      	
+		      	fetch('users.json',) 
+	    		.then(res=>res.json())
+	    		.then((response) => { 
+
+				    this.users = response
+
+				    console.log(response)
+
+				 }) 
+		    }
+	    },
+	    mounted() { 
+		    this.initialize();
+		}
 
 	  }).mount('#main')
 	</script>
