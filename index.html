@@ -30,7 +30,21 @@
 		table.customTable thead {
 		  background-color: #7EA8F8;
 		}
+		.card {
+		  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+		  transition: 0.3s;
+		  width: 20%;
+		  display: inline-block;
+		  margin:10px;
+		}
 
+		.card:hover {
+		  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+		}
+
+		.container {
+		  padding: 2px 16px;
+		}
 	</style>
 </head>
 <body>
@@ -46,7 +60,7 @@
 				<label>
 					Correo: 
 				</label>
-				<input v-model="email" type="email"  placeholder="write Here" required name="">
+				<input v-model="email" type="text"  placeholder="write Here" required name="">
 			</fieldset>
 
 			<fieldset>
@@ -68,9 +82,28 @@
 				Bienvenido al sistema
 			</h1>
 
+			<div class="card" v-for="movie in movies">
+
+				<!-- <img :src="`${publicPath}my-image.png`">
+
+				v-bind:src="{{ movie.poster_path }}" -->
+
+			  <img :src="`https://image.tmdb.org/t/p/w220_and_h330_face/${movie.poster_path}`"  alt="Avatar" style="width:100%">
+			  <div class="container">
+			    <h4>
+			    	<a :href="`movie.html?id=${movie.id}`">
+			    		<b>{{ movie.original_title }}</b>
+			    	</a>
+			    </h4> 
+			    <p>Architect & Engineer</p> 
+			  </div>
+			</div>
+
+			<!-- 
 			<button v-if="!add_new_user" @click="add_new_user=true">
 				Agregar
 			</button>
+
 
 			<table class="customTable" v-if="!add_new_user">
 				<thead>
@@ -138,7 +171,7 @@
 				<button @click="add_new_user=false">
 					Cancel
 				</button>
-			</form>
+			</form> -->
 
 		</div>
 
@@ -152,7 +185,7 @@
 		if (session) { 
 			console.log(JSON.parse(session)) 
 		}else{
-			localStorage.setItem("user_log", null);
+			//localStorage.setItem("user_log", null);
 		}
 		
 
@@ -163,10 +196,11 @@
 	    setup() {
 
 	      
-	      let email = ref('jsoto@uabcs.mx') 
-	      let password = ref('123123123') 
+	      let email = ref('jonathansoto') 
+	      let password = ref('finhuH7xTAFF8z') 
 	      let access = ref(false)
 	      let users = ref([])
+	      let movies = ref([])
 	      let add_new_user = ref(false)
 
 	      let user_name = ref('')
@@ -187,7 +221,8 @@
 	        user_name,
 			user_username,
 			user_email,
-			user_phone
+			user_phone,
+			movies
 	      }
 	    }, 
 	    methods: { 
@@ -195,34 +230,43 @@
 	    	onSubmit()
 	    	{  
 
-	    		fetch('users.json',) 
-	    		.then(res=>res.json())
-	    		.then((response) => { 
 
-				    response.forEach((e) => {
+	    		const myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZjc0YTNmYTEyOWY1MzhhMTFhMjM4NTc4MWYxM2VkYyIsIm5iZiI6MTcyNzE5OTcwOC43Mzg3OCwic3ViIjoiNjMxYTIzNjIxZDFiZjQwMDdlYTExNjEzIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.M8kRfu3BggfcCg5N7cublr4uKEXnFly0f__Vpo2ngLg");
 
-				    	if (e.email==this.email) {
-				    		if(e.password == this.password){ 
-				    			
-				    			this.access = true
-
-				    			localStorage.setItem("user_log", JSON.stringify(e));
-				    		}
-				    	}
-
-				    });
-
-				    if (!this.access) {
-				    	alert("Verifique su información")
-				    }
-
-
-				 })
-	    		.catch((error) => {
-				    
-	    			alert("Ha ocurrido un error")
-
+				const raw = JSON.stringify({
+				  "username": this.email,
+				  "password": this.password,
+				  "request_token": ""
 				});
+
+				const requestOptions = {
+				  method: "POST",
+				  headers: myHeaders,
+				  body: raw,
+				  redirect: "follow"
+				};
+
+				fetch("https://api.themoviedb.org/3/authentication/token/validate_with_login", requestOptions)
+				  .then((response) => response.json()) 
+				  .then((result) => {
+
+				  	if (result.success) {
+				  		this.access = true
+
+				    	localStorage.setItem("user_log", JSON.stringify(result));
+
+				    	initialize();
+				  	}else{
+				  		alert("Verifique su información")
+				  	}
+
+				  })
+				  .catch((error) => console.error(error));
+
+
+	    		 
 	    	},
 	    	
 	    	addNewUser(){
@@ -247,15 +291,28 @@
 
 	    	initialize() {
 		      	
-		      	fetch('users.json',) 
-	    		.then(res=>res.json())
-	    		.then((response) => { 
+		      	if (this.access) { 
 
-				    this.users = response
+				const myHeaders = new Headers();
+				myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZjc0YTNmYTEyOWY1MzhhMTFhMjM4NTc4MWYxM2VkYyIsIm5iZiI6MTcyNzE5OTcwOC43Mzg3OCwic3ViIjoiNjMxYTIzNjIxZDFiZjQwMDdlYTExNjEzIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.M8kRfu3BggfcCg5N7cublr4uKEXnFly0f__Vpo2ngLg");
 
-				    console.log(response)
+				const requestOptions = {
+				  method: "GET",
+				  headers: myHeaders,
+				  redirect: "follow"
+				};
 
-				 }) 
+				fetch("https://api.themoviedb.org/3/discover/movie", requestOptions)
+				  .then((response) => response.json())
+				  .then((result) => {
+
+				  	this.movies = result.results
+				  	console.log(result.results)
+
+				  })
+				  .catch((error) => console.error(error));
+
+				 }
 		    }
 	    },
 	    mounted() { 
