@@ -1,3 +1,17 @@
+<?php 	
+	session_start();
+
+	if (isset($_SESSION['user_id']) && $_SESSION['user_id']!=null) {
+		
+		
+
+		
+	}else{
+
+		header('Location: index.php');
+	}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
