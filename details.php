@@ -1,3 +1,24 @@
+<?php 	
+	include_once "app/ProductController.php";
+	$productController = new ProducController();
+
+	if (!isset($_GET['slug']) || $_GET['slug']=="") {
+		header('Location: home.php'); 
+	}
+
+
+	if (isset($_SESSION['user_id']) && $_SESSION['user_id']!=null) {
+		
+
+		$product = $productController->getBySlug($_GET['slug']);
+
+
+	}else{
+
+		header('Location: index.php');
+	}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -126,9 +147,9 @@
 								Detalle del producto
 							</h2>
 
-							<div class="card">
+							<div class="card mb-3">
 							  <div class="card-header">
-							    Featured
+							    <?= $product->name ?>
 							  </div>
 							  <div class="card-body">
 							    
@@ -144,13 +165,13 @@
 											  </div>
 											  <div class="carousel-inner">
 											    <div class="carousel-item active">
-											      <img src="https://ui-avatars.com/api/?name=John+Doe" class="d-block w-100" alt="...">
+											      <img src="<?= $product->cover ?>" class="d-block w-100" alt="...">
 											    </div>
 											    <div class="carousel-item">
-											      <img src="https://ui-avatars.com/api/?name=John+Doe" class="d-block w-100" alt="...">
+											      <img src="<?= $product->cover ?>" class="d-block w-100" alt="...">
 											    </div>
 											    <div class="carousel-item">
-											      <img src="https://ui-avatars.com/api/?name=John+Doe" class="d-block w-100" alt="...">
+											      <img src="<?= $product->cover ?>" class="d-block w-100" alt="...">
 											    </div>
 											  </div>
 											  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -167,8 +188,15 @@
 
 							  		<div class="col">
 							  			
-							  			<h5 class="card-title">Special title treatment</h5>
-									    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+							  			<h5 class="card-title">
+							  				
+							  				<?= $product->name ?>
+
+							  			</h5>
+									    <p class="card-text">
+									    	
+									    	<?= $product->description ?>
+									    </p>
 
 									    <h3>
 									    	$100,00 MXN

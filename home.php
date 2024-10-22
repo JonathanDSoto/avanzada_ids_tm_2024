@@ -1,11 +1,14 @@
 <?php 	
-	session_start();
+	include_once "app/ProductController.php";
+	$productController = new ProducController();
+
 
 	if (isset($_SESSION['user_id']) && $_SESSION['user_id']!=null) {
 		
-		
 
-		
+		$products = $productController->get();
+
+
 	}else{
 
 		header('Location: index.php');
@@ -142,23 +145,32 @@
 
 							<div class="row"> 
 
+
+								<?php if (isset($products) && count($products)): ?> 
+								<?php foreach ($products as $product): ?>
+								
+
 								<div class="card m-1" style="width: 18rem;">
-								  <img src="..." class="card-img-top" alt="...">
+								  <img src="<?= $product->cover  ?>" class="card-img-top" alt="...">
 								  <div class="card-body">
-								    <h5 class="card-title">Card title</h5>
-								    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-								    <a href="details.html" class="btn btn-primary">Go somewhere</a>
+								    <h5 class="card-title">
+								    	<?= $product->name  ?>
+								    </h5>
+								    <p class="card-text">
+								    	
+								    	<?= $product->description  ?>
+
+								    </p>
+								    <a href="details.php?slug=<?= $product->slug  ?>" class="btn btn-primary">
+								    	Ver detalles
+								    </a>
 								  </div>
 								</div>
 
-								<div class="card m-1" style="width: 18rem;">
-								  <img src="..." class="card-img-top" alt="...">
-								  <div class="card-body">
-								    <h5 class="card-title">Card title</h5>
-								    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-								    <a href="#" class="btn btn-primary">Go somewhere</a>
-								  </div>
-								</div>
+
+								<?php endforeach ?> 
+								<?php endif ?> 
+								 
 
 							</div>
 
